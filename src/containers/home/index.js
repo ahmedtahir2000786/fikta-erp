@@ -125,7 +125,7 @@ class Home extends Component {
             <CardData
               link="/neworder"
               title="New Order"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={neworder}
             />
           </Col>
@@ -133,7 +133,7 @@ class Home extends Component {
             <CardData
               link="/replaceorder"
               title="Replacement Order"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={replacementorder}
             />
           </Col>
@@ -141,17 +141,27 @@ class Home extends Component {
             <CardData
               link="/view_data"
               title="View Orders [Data]"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={vieworders}
             />
+            
+            
           </Col>
         </Row>
         <Row style={{ textAlign: "center", padding: "10px" }}>
           <Col style={{ margin: "10px" }}>
             <CardData
+              link="/table_data_without_product"
+              title="View Data [Without Product]"
+              desc=""
+              imageLink={vieworders}
+            />
+          </Col>
+          <Col style={{ margin: "10px" }}>
+            <CardData
               link="/replacement_data"
               title="Replacement Rcvd. Update"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={replacementrcvd}
             />
           </Col>
@@ -159,25 +169,26 @@ class Home extends Component {
             <CardData
               link="/return_data"
               title="Return Rcvd. Update"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={returnrcvd}
             />
           </Col>
-          <Col style={{ margin: "10px" }}>
+          
+        </Row>
+        <Row style={{ textAlign: "center", padding: "10px" }}>
+        <Col style={{ margin: "10px" }}>
             <CardData
               link="/edit_delete"
               title="Edit OR Delete"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={editordelete}
             />
           </Col>
-        </Row>
-        <Row style={{ textAlign: "center", padding: "10px" }}>
           <Col style={{ margin: "10px" }}>
             <CardData
               link="/add_product_form"
               title="Add Product"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={addprod}
             />
           </Col>
@@ -185,25 +196,26 @@ class Home extends Component {
             <CardData
               link="/product_data"
               title="View Products"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={viewprod}
             />
           </Col>
-          <Col style={{ margin: "10px" }}>
+          
+        </Row>
+        <Row style={{ textAlign: "center", padding: "10px" }}>
+        <Col style={{ margin: "10px" }}>
             <CardData
               link="/single_product"
               title="Get Product Sale Data"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={prodsaledata}
             />
           </Col>
-        </Row>
-        <Row style={{ textAlign: "center", padding: "10px" }}>
           <Col style={{ margin: "10px" }}>
             <CardData
               link="/chq_detail"
               title="Register/Edit Cheque Details"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={regchq}
             />
           </Col>
@@ -211,15 +223,18 @@ class Home extends Component {
             <CardData
               link="/validate_chq"
               title="Validate Cheque"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={valchq}
             />
           </Col>
-          <Col style={{ margin: "10px" }}>
+         
+        </Row>
+        <Row>
+        <Col style={{ margin: "10px" }}>
             <CardData
               link="/chq_data"
               title="View Cheque [Data]"
-              desc="Some quick example text to build on the card title and make up the bulk of the card's content."
+              desc=""
               imageLink={viewchq}
             />
           </Col>

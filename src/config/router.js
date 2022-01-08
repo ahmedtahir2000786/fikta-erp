@@ -23,6 +23,7 @@ import ChangePass from "../containers/changepass";
 import AddProductDtl from "../containers/add_product_detail_predef";
 import ShipperDetail from "../containers/shipper_detail";
 import CityDetail from "../containers/citydtl";
+import RepTable from "../containers/replicate_table_without_product";
 
 class AppRouter extends React.Component {
   render() {
@@ -60,6 +61,7 @@ class AppRouter extends React.Component {
         <Route exact path="/add_prod_detail" component={AddProductDtl} />
         <Route exact path="/shipper_detail" component={ShipperDetail} />
         <Route exact path="/city_detail" component={CityDetail} />
+        <Route exact path="/table_data_without_product" component={RepTable} />
       </Router>
     );
   }
