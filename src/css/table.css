@@ -24,6 +24,17 @@ h2{
     color: white;
     padding: 30px 0;
 }
+.status-select
+{
+    width: 150px;
+    margin: 10px;
+}
+.status-select:focus
+{
+    min-width: 150px;
+    width: auto;
+}
+
 
 /* Table Styles */
 

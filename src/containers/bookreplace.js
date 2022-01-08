@@ -470,7 +470,7 @@ class BookReplace extends Component {
                           placeholder="Cust ID"
                           value={this.state.id}
                           onChange={(e) =>
-                            this.setState({ id: e.target.value.toUpperCase() })
+                            this.setState({ id: e.target.value })
                           }
                         />
                       </div>

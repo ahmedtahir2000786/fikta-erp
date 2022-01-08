@@ -62,7 +62,7 @@ class Ticket extends Component {
               <strong>Address:</strong> {this.props.i.address}
             </div>
             <div>
-              <strong>City:</strong> {this.props.i.city}
+              <strong>City:</strong>{this.props.i.city}
             </div>
             <div>
               <strong>Contact no:</strong> {this.props.i.phone}
@@ -147,9 +147,9 @@ class ViewLog extends Component {
     let lst = this.state.data[0]["status_date"][i]["updated"];
     lst.push({ upd_date: date_create, upd_rsn: this.state.reasonarr[i] });
     //console.log("Status Data", this.state.data[0]["status_date"][i], "i", i);
-    this.state.data[0]["status_date"].map((v, i) => {
-      v.reason = this.state.reasonarr[i];
-    });
+    // this.state.data[0]["status_date"].map((v, i) => {
+    //   v.reason = this.state.reasonarr[i];
+    // });
 
     axios
       .post(
@@ -169,9 +169,9 @@ class ViewLog extends Component {
       .catch((err) => console.log(err));
   };
   updateCominDB = () => {
-    this.state.data[0]["status_date"].map((v, i) => {
-      v.reason = this.state.reasonarr[i];
-    });
+    // this.state.data[0]["status_date"].map((v, i) => {
+    //   v.reason = this.state.reasonarr[i];
+    // });
 
     axios
       .post(
@@ -220,6 +220,7 @@ class ViewLog extends Component {
     let list = [];
 
     this.state.data[0]["status_date"].map((v, i) => {
+      let length_of_array = this.state.data[0]["status_date"][i]["updated"].length
       list.push(
         <div>
           <Container>
@@ -239,16 +240,30 @@ class ViewLog extends Component {
                   <strong>On: </strong>
                   {v.date}
                 </div>
+                <div>
+                  <strong>Comment: </strong>
+                  {v.reason}
+                </div>
+               
                 {this.getUpdated(i, v)}
               </Col>
               <Col style={{ textAlign: "center" }}>
                 <div>
-                  <strong>Comment: </strong>
+                <strong>Comment: </strong>
+                 {length_of_array == 0?
+                 <input
+                 style={{ width: "80%" }}
+                 value={this.state.reasonarr[i]}
+                 onChange={(e) => this.updateComment(e.target.value, i)}
+               />
+                 :
+                
                   <input
                     style={{ width: "80%" }}
-                    value={this.state.reasonarr[i]}
+                    value={this.state.data[0]["status_date"][i]["updated"][length_of_array-1]["upd_rsn"]}
                     onChange={(e) => this.updateComment(e.target.value, i)}
                   />
+                 }
                   <div>
                     <em style={{ fontSize: "12px" }}>
                       Note: Special character such as " or ' are not allowed.
@@ -309,7 +324,6 @@ class ViewLog extends Component {
     );
   }
 }
-
 class Delete extends Component {
   constructor(props) {
     super(props);
@@ -334,7 +348,7 @@ class Delete extends Component {
         <Modal.Body>
           <h4>Reason:</h4>
           <p>
-            <textarea
+            <input
               required
               placeholder="Share any reason!"
               style={{ width: "100%" }}
@@ -408,11 +422,13 @@ class StatusReason extends Component {
         <Modal.Body>
           <h4>Reason:</h4>
           <p>
-            <textarea
+            <input
               required
               placeholder="Share any reason!"
               style={{ width: "100%" }}
-              onChange={(e) => this.setState({ reason: e.target.value })}
+              onChange={(e) => {
+                let cleaned_val = e.target.value.replace(/[^0-9a-zA-Z\s]*/g, "");
+                this.setState({ reason: cleaned_val })}}
               value={this.state.reason}
             />
             <span style={{ color: "red", fontSize: "10px" }}>
@@ -489,7 +505,12 @@ class Table extends Component {
       showTicket: false,
       statuslist: [
         "Booked",
-        "In Process",
+        "Temporary",
+        "Call Pending",
+        "Supply Pending",
+        "Order Cancel",
+        "In Transit",
+        "Out for Delivery",
         "Dispatched",
         "Return",
         "Delivered",
@@ -497,7 +518,12 @@ class Table extends Component {
       ],
       prevstslist: [
         "Booked",
-        "In Process",
+        "Temporary",
+        "Call Pending",
+        "Supply Pending",
+        "Order Cancel",
+        "In Transit",
+        "Out for Delivery",
         "Dispatched",
         "Return",
         "Delivered",
@@ -511,10 +537,15 @@ class Table extends Component {
       changeStatusTo: "",
       askReasonforStatusChange: false,
       stsChangeReason: "",
-      checkSts: [true, true, true, true, true, true],
+      checkSts: [true, true, true, true, true, true, true,true, true, true, true],
       checkedlist: [
         "Booked",
-        "In Process",
+        "Temporary",
+        "Call Pending",
+        "Supply Pending",
+        "Order Cancel",
+        "In Transit",
+        "Out for Delivery",
         "Dispatched",
         "Return",
         "Delivered",
@@ -526,11 +557,16 @@ class Table extends Component {
     };
     this.prevcheckedlist = [
       "Booked",
-      "In Process",
-      "Dispatched",
-      "Return",
-      "Delivered",
-      "Deleted",
+        "Temporary",
+        "Call Pending",
+        "Supply Pending",
+        "Order Cancel",
+        "In Transit",
+        "Out for Delivery",
+        "Dispatched",
+        "Return",
+        "Delivered",
+        "Deleted",
     ];
   }
 
@@ -608,57 +644,66 @@ class Table extends Component {
       return this.state.neworders[k]["status"];
     }
     let list = [];
-    if (this.state.neworders[k]["status"] == "Booked") {
-      list.push(
-        <option selected value="Booked">
-          Booked
-        </option>
-      );
-      list.push(<option value="In Process">In Process</option>);
-      list.push(<option value="Dispatched">Dispatched</option>);
-      list.push(<option value="Return">Return</option>);
-      list.push(<option value="Delivered">Delivered</option>);
-    } else if (this.state.neworders[k]["status"] == "In Process") {
-      list.push(<option value="Booked">Booked</option>);
-      list.push(
-        <option selected value="In Process">
-          In Process
-        </option>
-      );
-      list.push(<option value="Dispatched">Dispatched</option>);
-      list.push(<option value="Return">Return</option>);
-      list.push(<option value="Delivered">Delivered</option>);
-    } else if (this.state.neworders[k]["status"] == "Dispatched") {
-      list.push(<option value="Booked">Booked</option>);
-      list.push(<option value="In Process">In Process</option>);
-      list.push(
-        <option selected value="Dispatched">
-          Dispatched
-        </option>
-      );
-      list.push(<option value="Return">Return</option>);
-      list.push(<option value="Delivered">Delivered</option>);
-    } else if (this.state.neworders[k]["status"] == "Return") {
-      list.push(<option value="Booked">Booked</option>);
-      list.push(<option value="In Process">In Process</option>);
-      list.push(<option value="Dispatched">Dispatched</option>);
-      list.push(
-        <option selected value="Return">
-          Return
-        </option>
-      );
-      list.push(<option value="Delivered">Delivered</option>);
-    } else if (this.state.neworders[k]["status"] == "Delivered") {
-      list.push(<option value="Booked">Booked</option>);
-      list.push(<option value="In Process">In Process</option>);
-      list.push(<option value="Dispatched">Dispatched</option>);
-      list.push(<option value="Return">Return</option>);
-      list.push(
-        <option selected value="Delivered">
-          Delivered
-        </option>
-      );
-    }
+    this.state.statuslist.map((status_val, status_key)=>{
+      if(status_val != "Deleted"){
+        if(status_val == this.state.neworders[k]["status"]){
+          list.push(<option selected value={status_val}>{status_val}</option>)
+        }else{
+          list.push(<option value={status_val}>{status_val}</option>)
+        }
+      }
+    })
+    // if (this.state.neworders[k]["status"] == "Booked") {
+    //   list.push(
+    //     <option selected value="Booked">
+    //       Booked
+    //     </option>
+    //   );
+    //   list.push(<option value="In Process">In Process</option>);
+    //   list.push(<option value="Dispatched">Dispatched</option>);
+    //   list.push(<option value="Return">Return</option>);
+    //   list.push(<option value="Delivered">Delivered</option>);
+    // } else if (this.state.neworders[k]["status"] == "In Process") {
+    //   list.push(<option value="Booked">Booked</option>);
+    //   list.push(
+    //     <option selected value="In Process">
+    //       In Process
+    //     </option>
+    //   );
+    //   list.push(<option value="Dispatched">Dispatched</option>);
+    //   list.push(<option value="Return">Return</option>);
+    //   list.push(<option value="Delivered">Delivered</option>);
+    // } else if (this.state.neworders[k]["status"] == "Dispatched") {
+    //   list.push(<option value="Booked">Booked</option>);
+    //   list.push(<option value="In Process">In Process</option>);
+    //   list.push(
+    //     <option selected value="Dispatched">
+    //       Dispatched
+    //     </option>
+    //   );
+    //   list.push(<option value="Return">Return</option>);
+    //   list.push(<option value="Delivered">Delivered</option>);
+    // } else if (this.state.neworders[k]["status"] == "Return") {
+    //   list.push(<option value="Booked">Booked</option>);
+    //   list.push(<option value="In Process">In Process</option>);
+    //   list.push(<option value="Dispatched">Dispatched</option>);
+    //   list.push(
+    //     <option selected value="Return">
+    //       Return
+    //     </option>
+    //   );
+    //   list.push(<option value="Delivered">Delivered</option>);
+    // } else if (this.state.neworders[k]["status"] == "Delivered") {
+    //   list.push(<option value="Booked">Booked</option>);
+    //   list.push(<option value="In Process">In Process</option>);
+    //   list.push(<option value="Dispatched">Dispatched</option>);
+    //   list.push(<option value="Return">Return</option>);
+    //   list.push(
+    //     <option selected value="Delivered">
+    //       Delivered
+    //     </option>
+    //   );
+    // }
 
     return list;
   };
@@ -715,6 +760,7 @@ class Table extends Component {
           <div style={{ marginTop: "20px" }}>
             {prop == "view" ? (
               <select
+             
                 onChange={(e) => {
                   this.setState({
                     changeStatusfrom: this.state.neworders[k]["status"],
@@ -724,7 +770,8 @@ class Table extends Component {
                   });
                   //console.log(this.state.stsChangeReason)
                 }}
-                style={{ width: "100%" }}
+                className="status-select"
+          
               >
                 {this.getStatus(k, prop)}
               </select>
@@ -789,12 +836,12 @@ class Table extends Component {
     if (time != "") {
       return (
         <Link to={"/edit/" + e["ord_id"]}>
-          <button className="btn-dark btn-xs">Edit</button>
+          <button className="btn-dark btn-xs" style={{display:"none"}}>Edit</button>
         </Link>
       );
     } else {
       return (
-        <button className="btn btn-dark" disabled>
+        <button className="btn btn-dark" disabled style={{display:"none"}}>
           Edit
         </button>
       );
@@ -845,9 +892,20 @@ class Table extends Component {
           })}
           {prop == "view" ? (
             <td>
+                  <button
+                className="btn-dark btn-xs"
+                style={{ marginBottom: "15px" }}
+                onClick={() => {
+                  this.setState({ showTicket: true, i: k });
+                  //this.setState({logShow:true, s:x, id:this.state.neworders[k]['ord_id']})
+                }}
+              >
+                Get Ticket
+              </button>
+              <br />
               <button
                 className="btn-primary btn-xs"
-                style={{ marginBottom: "15px" }}
+             
                 onClick={() => {
                   this.setState({
                     logShow: true,
@@ -858,12 +916,12 @@ class Table extends Component {
               >
                 View Log
               </button>
-              <br />
+              {/* <br />
               {this.getEdit(this.state.neworders[k])}
               <br />
-              <span>
+              <span style={{display:"none"}}>
                 {this.getTimeDifference(date, this.state.neworders[k]["date"])}
-              </span>
+              </span> */}
             </td>
           ) : (
             ""
@@ -871,17 +929,8 @@ class Table extends Component {
 
           {prop == "view" ? (
             <td>
-              <button
-                className="btn-primary btn-xs"
-                style={{ marginBottom: "15px" }}
-                onClick={() => {
-                  this.setState({ showTicket: true, i: k });
-                  //this.setState({logShow:true, s:x, id:this.state.neworders[k]['ord_id']})
-                }}
-              >
-                Get Ticket
-              </button>
-              <br />
+          
+            
 
               <button
                 onClick={() => {
@@ -908,7 +957,7 @@ class Table extends Component {
   componentDidMount() {
     //this.setState({selectedDate:date})
 
-    this.interval = setInterval(() => this.setState({ render0: true }), 10000);
+    //this.interval = setInterval(() => this.setState({ render0: true }), 10000);
     axios
       .post(
         "https://meatncuts.com.pk/phpfiles/api/view_data.php?date=" +
@@ -921,12 +970,16 @@ class Table extends Component {
       )
       .then((response) => {
         this.setState({ neworders: response.data });
+        let len_data = response.data.length
+     
         //console.log("Response Data", response.data);
       })
       .catch((err) => console.log("Error", err));
+
+      
   }
   componentWillUnmount() {
-    clearInterval(this.interval);
+    //clearInterval(this.interval);
   }
   getStatusOption = () => {
     let list = [];
@@ -1135,7 +1188,7 @@ class Table extends Component {
               {this.getCategoryOption()}
             </select>
           </div>
-          <div style={{ textAlign: "center" }}>
+          <div style={{ textAlign: "center",width:"50%", margin:"auto" }}>
             <div>
               <label style={{ color: "white" }}>Filter By Status: </label>
             </div>
@@ -1222,7 +1275,7 @@ class Table extends Component {
               this.updateDelete(this.state.i, e, this.state.d);
             }}
             show={this.state.modalShow}
-            onHide={() => this.setState({ modalShow: false })}
+            onHide={() => this.setState({render1:true, modalShow: false })}
             s={this.state.s}
           />
         ) : (

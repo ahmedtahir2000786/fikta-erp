@@ -667,13 +667,13 @@ class ReplacementData extends Component {
     let time = this.getTimeDifference(date, e["date"]);
     if (time != "") {
       return (
-        <Link to={"/edit/" + e["ord_id"]}>
-          <button className="btn-dark btn-xs">Edit</button>
+        <Link to={"/edit/" + e["ord_id"]} >
+          <button className="btn-dark btn-xs" style={{display:"none"}}>Edit</button>
         </Link>
       );
     } else {
       return (
-        <button className="btn btn-dark" disabled>
+        <button className="btn btn-dark" disabled style={{display:"none"}}>
           Edit
         </button>
       );
