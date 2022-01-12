@@ -36,11 +36,12 @@ class Ticket extends Component {
     //console.log(this.props.i);
 
     return (
-      <Modal
-        {...this.props}
+      <Modal {...this.props}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -108,235 +109,241 @@ class Ticket extends Component {
   }
 }
 class ViewLog extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        data: [],
-        status_reason: "",
-        reasonarr: [],
-        updateButton: false,
-        updateSingle: [],
-        input:[],
-      };
-  
-      
-    }
-    componentDidMount = () => {
-      axios
-        .get(
-          "https://meatncuts.com.pk/phpfiles/api/viewlog.php?id=" + this.props.id
-        )
-        .then((response) => {
-          //console.log("Log Response: ", response.data);
-          let reasonArr = [];
-          response.data[0]["status_date"].map((v, i) => {
-            reasonArr[i] = v.reason;
-            this.state.updateSingle[i] = false;
-            this.state.input.push("")
-            let length_of_array = response.data[0]["status_date"][i]["updated"].length
-            if(length_of_array == 0){
-              this.state.input[i] =reasonArr[i];
-            }else{
-              this.state.input[i] =  response.data[0]["status_date"][i]["updated"][length_of_array-1]["upd_rsn"]
-            }
-          });
-  
-          this.setState({
-            data: response.data,
-            reasonarr: reasonArr,
-            updateSingle: this.state.updateSingle,
-            input: this.state.input
-          });
-  
-          //console.log("Check",response.data)
-        })
-        .catch((err) => console.log("Error", err));
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: [],
+      status_reason: "",
+      reasonarr: [],
+      updateButton: false,
+      updateSingle: [],
+      input:[],
     };
-  
-    updateonebyone = (i) => {
-      let date_create = moment().format("YYYY-MM-DD HH:mm:ss");
-      let lst = this.state.data[0]["status_date"][i]["updated"];
-      lst.push({ upd_date: date_create, upd_rsn: this.state.input[i] });
-      //console.log("Status Data", this.state.data[0]["status_date"][i], "i", i);
-      // this.state.data[0]["status_date"].map((v, i) => {
-      //   v.reason = this.state.reasonarr[i];
-      // });
-  
-      axios
-        .post(
-          "https://meatncuts.com.pk/phpfiles/api/update_comments.php?id=" +
-            this.props.id +
-            "&idx=" +
-            i,
-          this.state.data[0]["status_date"]
-        )
-        .then((res) => {
-          this.state.updateSingle[i] = false;
-          this.setState({
-            updateButton: false,
-            updateSingle: this.state.updateSingle,
-          });
-        })
-        .catch((err) => console.log(err));
-    };
-    updateCominDB = () => {
-      // this.state.data[0]["status_date"].map((v, i) => {
-      //   v.reason = this.state.reasonarr[i];
-      // });
-  
-      axios
-        .post(
-          "https://meatncuts.com.pk/phpfiles/api/update_comments.php?id=" +
-            this.props.id,
-          this.state.data[0]["status_date"]
-        )
-        .then((res) => {
-          this.setState({ updateButton: false });
-        })
-        .catch((err) => console.log(err));
-    };
-    updateComment = (e, i, cnd) => {
-      console.log("E: ", e)
-      e = e.replace(/[^0-9a-zA-Z\s]*/g, "");
-      this.state.input[i] = e;
+
     
-      this.state.updateSingle[i] = true;
-      this.setState({
-        reasonarr: this.state.reasonarr,
-        input:this.state.input,
-        updateSingle: this.state.updateSingle,
-        
-      });
-    };
+  }
+  componentDidMount = () => {
+    axios
+      .get(
+        "https://meatncuts.com.pk/phpfiles/api/viewlog.php?id=" + this.props.id
+      )
+      .then((response) => {
+        //console.log("Log Response: ", response.data);
+        let reasonArr = [];
+        response.data[0]["status_date"].map((v, i) => {
+          reasonArr[i] = v.reason;
+          this.state.updateSingle[i] = false;
+          this.state.input.push("")
+          let length_of_array = response.data[0]["status_date"][i]["updated"].length
+          if(length_of_array == 0){
+            this.state.input[i] =reasonArr[i];
+          }else{
+            this.state.input[i] =  response.data[0]["status_date"][i]["updated"][length_of_array-1]["upd_rsn"]
+          }
+        });
+
+        this.setState({
+          data: response.data,
+          reasonarr: reasonArr,
+          updateSingle: this.state.updateSingle,
+          input: this.state.input
+        });
+
+        //console.log("Check",response.data)
+      })
+      .catch((err) => console.log("Error", err));
+  };
+
+  updateonebyone = (i) => {
+    let date_create = moment().format("YYYY-MM-DD HH:mm:ss");
+    let lst = this.state.data[0]["status_date"][i]["updated"];
+    lst.push({ upd_date: date_create, upd_rsn: this.state.input[i] });
+    //console.log("this.state.input[i]: ", this.state.input[i])
+    //console.log("Status Data", this.state.data[0]["status_date"][i], "i", i);
+    // this.state.data[0]["status_date"].map((v, i) => {
+    //   v.reason = this.state.reasonarr[i];
+    // });
+
+    axios
+      .post(
+        "https://meatncuts.com.pk/phpfiles/api/update_comments.php?id=" +
+          this.props.id +
+          "&idx=" +
+          i+"&lts_rsn=" +
+          this.state.input[i],
+        this.state.data[0]["status_date"]
+      )
+      .then((res) => {
+        this.state.updateSingle[i] = false;
+        this.setState({
+          updateButton: false,
+          updateSingle: this.state.updateSingle,
+        });
+      })
+      .catch((err) => console.log(err));
+  };
+  updateCominDB = () => {
+    // this.state.data[0]["status_date"].map((v, i) => {
+    //   v.reason = this.state.reasonarr[i];
+    // });
+
+    axios
+      .post(
+        "https://meatncuts.com.pk/phpfiles/api/update_comments.php?id=" +
+          this.props.id,
+        this.state.data[0]["status_date"]
+      )
+      .then((res) => {
+        this.setState({ updateButton: false });
+      })
+      .catch((err) => console.log(err));
+  };
+  updateComment = (e, i, cnd) => {
+    //console.log("E: ", e)
+    e = e.replace(/[^0-9a-zA-Z\s]*/g, "");
+    this.state.input[i] = e;
   
-    getUpdated = (i, v) => {
-      let list = [];
-      //console.log(v);
-  
-      v.updated.map((k, m) => {
-        list.push(
-          <div>
-            <strong>Last Updated: </strong>
-            {k.upd_date}
-          </div>
-        );
-        list.push(
-          <div>
-            <strong>Comment: </strong>
-            {k.upd_rsn}
-          </div>
-        );
-      });
-      return list;
-    };
-  
-    getLog = () => {
-      //console.log(this.state.data[0]["status_date"])
-      let list = [];
-  
-      this.state.data[0]["status_date"].map((v, i) => {
-        let length_of_array = this.state.data[0]["status_date"][i]["updated"].length
-        list.push(
-          <div>
-            <Container>
-              <Row>
-                <Col>
-                  <div
-                    style={{
-                      background: "blue",
-                      color: "white",
-                      width: "40%",
-                      padding: "10px",
+    this.state.updateSingle[i] = true;
+    this.setState({
+      reasonarr: this.state.reasonarr,
+      input:this.state.input,
+      updateSingle: this.state.updateSingle,
+      
+    });
+  };
+
+  getUpdated = (i, v) => {
+    let list = [];
+    //console.log(v);
+
+    v.updated.map((k, m) => {
+      list.push(
+        <div>
+          <strong>Last Updated: </strong>
+          {k.upd_date}
+        </div>
+      );
+      list.push(
+        <div>
+          <strong>Comment: </strong>
+          {k.upd_rsn}
+        </div>
+      );
+    });
+    return list;
+  };
+
+  getLog = () => {
+    //console.log(this.state.data[0]["status_date"])
+    let list = [];
+    let len_data = this.state.data[0]["status_date"].length;
+    this.state.data[0]["status_date"].map((v, i) => {
+      let length_of_array = this.state.data[0]["status_date"][i]["updated"].length
+      list.push(
+        <div>
+          <Container>
+            <Row>
+              <Col>
+                <div
+                  style={{
+                    background: "blue",
+                    color: "white",
+                    padding: "10px",
+                  }}
+                >
+                  {v.st}
+                </div>
+                <div>
+                  <strong>On: </strong>
+                  {v.date}
+                </div>
+                <div>
+                  <strong>Comment: </strong>
+                  {v.reason}
+                </div>
+               
+                {this.getUpdated(i, v)}
+              </Col>
+              
+              {len_data == i+1?<Col style={{ textAlign: "center" }}>
+                <div>
+                <strong>Comment: </strong>
+                 
+                
+                  <input
+                    style={{ width: "80%" }}
+                    value={this.state.input[i]}
+                    onChange={(e) => {
+                      //console.log(e.target.value)
+                      let cnd = false
+                      this.updateComment(e.target.value, i, cnd)
+                    }}
+                  />
+                 
+                  <div>
+                    <em style={{ fontSize: "12px" }}>
+                      Note: Special character such as " or ' are not allowed.
+                    </em>
+                  </div>
+                </div>
+                {this.state.updateSingle[i] == true ? (
+                  <button
+                    className="btn-xs btn-primary"
+                    onClick={() => {
+                      this.updateonebyone(i);
                     }}
                   >
-                    {v.st}
-                  </div>
-                  <div>
-                    <strong>On: </strong>
-                    {v.date}
-                  </div>
-                  <div>
-                    <strong>Comment: </strong>
-                    {v.reason}
-                  </div>
-                 
-                  {this.getUpdated(i, v)}
-                </Col>
-                <Col style={{ textAlign: "center" }}>
-                  <div>
-                  <strong>Comment: </strong>
-                   
-                  
-                    <input
-                      style={{ width: "80%" }}
-                      value={this.state.input[i]}
-                      onChange={(e) => {
-                        //console.log(e.target.value)
-                        let cnd = false
-                        this.updateComment(e.target.value, i, cnd)
-                      }}
-                    />
-                   
-                    <div>
-                      <em style={{ fontSize: "12px" }}>
-                        Note: Special character such as " or ' are not allowed.
-                      </em>
-                    </div>
-                  </div>
-                  {this.state.updateSingle[i] == true ? (
-                    <button
-                      className="btn-xs btn-primary"
-                      onClick={() => {
-                        this.updateonebyone(i);
-                      }}
-                    >
-                      Update
-                    </button>
-                  ) : (
-                    ""
-                  )}
-                </Col>
-              </Row>
-            </Container>
-          </div>
-        );
-      });
-      return list;
-    };
-  
-    render() {
-      return (
-        <Modal
-          {...this.props}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header>
-            <Modal.Title id="contained-modal-title-vcenter">
-              Log of Order: {this.props.s}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div>{this.state.data.length > 0 ? this.getLog() : ""}</div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              className="btn-danger"
-              onClick={() => {
-                //console.log(this.props)
-                //this.setState({reason:""})
-                this.props.onHide();
-              }}
-            >
-              Close
-            </Button>
-            {/* onClick={this.props.onHide} */}
-          </Modal.Footer>
-        </Modal>
+                    Update
+                  </button>
+                ) : (
+                  ""
+                )}
+              </Col>:""}
+              
+            </Row>
+          </Container>
+        </div>
       );
-    }
+    });
+    return list;
+  };
+
+  render() {
+    return (
+      <Modal
+        {...this.props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        backdrop="static" 
+        keyboard = {false}
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Log of Order: {this.props.s}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>{this.state.data.length > 0 ? this.getLog() : ""}</div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="btn-danger"
+            onClick={() => {
+              //console.log(this.props)
+              //this.setState({reason:""})
+              this.props.render_data(true)
+              this.props.onHide();
+            }}
+          >
+            Close
+          </Button>
+          {/* onClick={this.props.onHide} */}
+        </Modal.Footer>
+      </Modal>
+    );
   }
+}
 class Delete extends Component {
   constructor(props) {
     super(props);
@@ -352,6 +359,8 @@ class Delete extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -420,6 +429,8 @@ class StatusReason extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -481,7 +492,7 @@ class StatusReason extends Component {
   }
 }
 
-class RepTable extends Component {
+class Table extends Component {
   constructor(props) {
     super(props);
     const firebase = fb.firebase_;
@@ -544,8 +555,11 @@ class RepTable extends Component {
       ],
       statusselected: "all",
       catlist: ["neworder", "replacement"],
+      paymentlist: ["Payment Not Rcvd", "Payment Rcvd"],
+      paymentselected: 2,
       catselected: "all",
       prevcatselected: "all",
+      prevselectedpayment:2,
       changeStatusfrom: "",
       changeStatusTo: "",
       askReasonforStatusChange: false,
@@ -736,7 +750,7 @@ class RepTable extends Component {
           e
       )
       .then((res) => {
-        this.setState({ render0: true });
+        this.setState({ render0: true, render1:true });
       })
       .catch((err) => console.log(err));
   };
@@ -823,9 +837,7 @@ class RepTable extends Component {
         keyName != "date" &&
         keyName != "only_time" &&
         keyName != "only_date" &&
-        keyName != "status" &&
-        keyName != "reason" &&
-        keyName != "design_name" && keyName != "color" && keyName != "size"
+        keyName != "status" && keyName != "design_name" && keyName != "color" && keyName != "size"
       ) {
         return <td key={i}>{this.state.neworders[k][keyName]}</td>;
       }
@@ -979,14 +991,20 @@ class RepTable extends Component {
           "&fdate=" +
           this.state.fromDate +
           "&catselected=" +
-          this.state.catselected,
+          this.state.catselected+"&paymentselected=" +
+          this.state.paymentselected,
         this.state.checkedlist
       )
       .then((response) => {
         this.setState({ neworders: response.data });
         let len_data = response.data.length
-     
-        //console.log("Response Data", response.data);
+        
+        // if(response.data.length != 0){
+        //   response.data.map((res_val,res_idx)=>{
+        //     parseInt(res_val.ord_id)
+        //     console.log()
+        //   })
+        // }
       })
       .catch((err) => console.log("Error", err));
 
@@ -1016,6 +1034,19 @@ class RepTable extends Component {
     );
     this.state.catlist.map((v, i) => {
       list.push(<option value={v}>{v}</option>);
+    });
+    return list;
+  };
+
+  getPaymentOption = () => {
+    let list = [];
+    list.push(
+      <option selected value={2}>
+        All
+      </option>
+    );
+    this.state.paymentlist.map((v, i) => {
+      list.push(<option value={i}>{v}</option>);
     });
     return list;
   };
@@ -1100,7 +1131,8 @@ class RepTable extends Component {
             "&fdate=" +
             this.state.fromDate +
             "&catselected=" +
-            this.state.catselected,
+            this.state.catselected+"&paymentselected=" +
+            this.state.paymentselected,
           this.state.checkedlist
         )
         .then((response) => {
@@ -1116,6 +1148,7 @@ class RepTable extends Component {
             prevcatselected: this.state.catselected,
             prevfromDate: this.state.fromDate,
             prevselectedDate: this.state.selectedDate,
+            prevselectedpayment: this.state.paymentselected
           });
 
           //console.log("Response Data",response.data)
@@ -1137,7 +1170,8 @@ class RepTable extends Component {
             "&fdate=" +
             this.state.prevfromDate +
             "&catselected=" +
-            this.state.prevcatselected,
+            this.state.prevcatselected+"&paymentselected=" +
+            this.state.prevselectedpayment,
           this.prevcheckedlist
         )
         .then((response) => {
@@ -1193,13 +1227,22 @@ class RepTable extends Component {
                     {this.getStatusOption()}
                 </select>
                 </div> */}
-          <div style={{ textAlign: "center", display: "inline-block" }}>
+          <div style={{ textAlign: "center", display: "inline-block", }}>
             <label style={{ color: "white" }}>Category: </label>
             <select
               style={{ width: "100%", marginLeft: "20px" }}
               onChange={(e) => this.setState({ catselected: e.target.value })}
             >
               {this.getCategoryOption()}
+            </select>
+          </div>
+          <div style={{ textAlign: "center", display: "inline-block" }}>
+            <label style={{ color: "white" }}>Payment Status: </label>
+            <select
+              style={{ width: "70%", }}
+              onChange={(e) => this.setState({ paymentselected: e.target.value })}
+            >
+              {this.getPaymentOption()}
             </select>
           </div>
           <div style={{ textAlign: "center",width:"50%", margin:"auto" }}>
@@ -1247,6 +1290,7 @@ class RepTable extends Component {
                   <th>Amount</th>
                   <th>Payment Rcv/Not Rcv</th>
                   <th>Status</th>
+                  <th>Latest Status Rsn</th>
                   <th colSpan="2">Action</th>
                 </tr>
               </thead>
@@ -1267,9 +1311,6 @@ class RepTable extends Component {
                   <th>Phone</th>
                   <th>Address</th>
                   <th>Amount</th>
-                  <th>Color</th>
-                  <th>Size</th>
-                  <th>Product Name</th>
                   <th>Payment Rcv/Not Rcv</th>
                   <th>Status</th>
                   <th>Status-Reason</th>
@@ -1317,6 +1358,9 @@ class RepTable extends Component {
             updateReason={(e) => {
               this.updateCommentsIndatabase(e);
             }}
+            render_data={(e) => {
+              this.setState({render0:true, render1:true});
+            }}
             show={this.state.logShow}
             onHide={() => this.setState({ logShow: false })}
             s={this.state.s}
@@ -1347,4 +1391,4 @@ const mapDispatchToProps = (dispatch) => ({
   //    facebook_login: () =>dispatch(facebook_login())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(RepTable);
+export default connect(mapStateToProps, mapDispatchToProps)(Table);

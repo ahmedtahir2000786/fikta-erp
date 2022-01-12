@@ -39,6 +39,8 @@ class Ticket extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -148,6 +150,8 @@ class ViewLog extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -190,6 +194,8 @@ class MyVerticallyCenteredModal extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -243,7 +249,7 @@ class MyVerticallyCenteredModal extends Component {
   }
 }
 
-class ReplacementData extends Component {
+class ReturnData extends Component {
   constructor(props) {
     super(props);
     const firebase = fb.firebase_;
@@ -1246,7 +1252,7 @@ class ReplacementData extends Component {
         </div>
         {this.state.showTable == true ? (
           <div>
-            <h2>Replacement Order</h2>
+            <h2>Return Order</h2>
             <div className="table-wrapper">
               <table className="fl-table">
                 <thead>
@@ -1266,7 +1272,7 @@ class ReplacementData extends Component {
                         }
                       }}
                     >
-                      Replacement Rcvd.
+                      Return Rcvd.
                     </th>
                   </tr>
                 </thead>
@@ -1326,7 +1332,7 @@ const mapDispatchToProps = (dispatch) => ({
   //    facebook_login: () =>dispatch(facebook_login())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReplacementData);
+export default connect(mapStateToProps, mapDispatchToProps)(ReturnData);
 
 // import React, {Component} from 'react';
 // import {connect} from 'react-redux'

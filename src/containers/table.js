@@ -36,11 +36,12 @@ class Ticket extends Component {
     //console.log(this.props.i);
 
     return (
-      <Modal
-        {...this.props}
+      <Modal {...this.props}
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -157,6 +158,7 @@ class ViewLog extends Component {
     let date_create = moment().format("YYYY-MM-DD HH:mm:ss");
     let lst = this.state.data[0]["status_date"][i]["updated"];
     lst.push({ upd_date: date_create, upd_rsn: this.state.input[i] });
+    //console.log("this.state.input[i]: ", this.state.input[i])
     //console.log("Status Data", this.state.data[0]["status_date"][i], "i", i);
     // this.state.data[0]["status_date"].map((v, i) => {
     //   v.reason = this.state.reasonarr[i];
@@ -167,7 +169,8 @@ class ViewLog extends Component {
         "https://meatncuts.com.pk/phpfiles/api/update_comments.php?id=" +
           this.props.id +
           "&idx=" +
-          i,
+          i+"&lts_rsn=" +
+          this.state.input[i],
         this.state.data[0]["status_date"]
       )
       .then((res) => {
@@ -196,7 +199,7 @@ class ViewLog extends Component {
       .catch((err) => console.log(err));
   };
   updateComment = (e, i, cnd) => {
-    console.log("E: ", e)
+    //console.log("E: ", e)
     e = e.replace(/[^0-9a-zA-Z\s]*/g, "");
     this.state.input[i] = e;
   
@@ -233,7 +236,7 @@ class ViewLog extends Component {
   getLog = () => {
     //console.log(this.state.data[0]["status_date"])
     let list = [];
-
+    let len_data = this.state.data[0]["status_date"].length;
     this.state.data[0]["status_date"].map((v, i) => {
       let length_of_array = this.state.data[0]["status_date"][i]["updated"].length
       list.push(
@@ -245,7 +248,6 @@ class ViewLog extends Component {
                   style={{
                     background: "blue",
                     color: "white",
-                    width: "40%",
                     padding: "10px",
                   }}
                 >
@@ -262,7 +264,8 @@ class ViewLog extends Component {
                
                 {this.getUpdated(i, v)}
               </Col>
-              <Col style={{ textAlign: "center" }}>
+              
+              {len_data == i+1?<Col style={{ textAlign: "center" }}>
                 <div>
                 <strong>Comment: </strong>
                  
@@ -295,7 +298,8 @@ class ViewLog extends Component {
                 ) : (
                   ""
                 )}
-              </Col>
+              </Col>:""}
+              
             </Row>
           </Container>
         </div>
@@ -311,6 +315,8 @@ class ViewLog extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -326,6 +332,7 @@ class ViewLog extends Component {
             onClick={() => {
               //console.log(this.props)
               //this.setState({reason:""})
+              this.props.render_data(true)
               this.props.onHide();
             }}
           >
@@ -352,6 +359,8 @@ class Delete extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -420,6 +429,8 @@ class StatusReason extends Component {
         size="lg"
         aria-labelledby="contained-modal-title-vcenter"
         centered
+        backdrop="static" 
+        keyboard = {false}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -544,8 +555,11 @@ class Table extends Component {
       ],
       statusselected: "all",
       catlist: ["neworder", "replacement"],
+      paymentlist: ["Payment Not Rcvd", "Payment Rcvd"],
+      paymentselected: 2,
       catselected: "all",
       prevcatselected: "all",
+      prevselectedpayment:2,
       changeStatusfrom: "",
       changeStatusTo: "",
       askReasonforStatusChange: false,
@@ -736,7 +750,7 @@ class Table extends Component {
           e
       )
       .then((res) => {
-        this.setState({ render0: true });
+        this.setState({ render0: true, render1:true });
       })
       .catch((err) => console.log(err));
   };
@@ -823,8 +837,7 @@ class Table extends Component {
         keyName != "date" &&
         keyName != "only_time" &&
         keyName != "only_date" &&
-        keyName != "status" &&
-        keyName != "reason"
+        keyName != "status" 
       ) {
         return <td key={i}>{this.state.neworders[k][keyName]}</td>;
       }
@@ -978,14 +991,20 @@ class Table extends Component {
           "&fdate=" +
           this.state.fromDate +
           "&catselected=" +
-          this.state.catselected,
+          this.state.catselected+"&paymentselected=" +
+          this.state.paymentselected,
         this.state.checkedlist
       )
       .then((response) => {
         this.setState({ neworders: response.data });
         let len_data = response.data.length
-     
-        //console.log("Response Data", response.data);
+        
+        // if(response.data.length != 0){
+        //   response.data.map((res_val,res_idx)=>{
+        //     parseInt(res_val.ord_id)
+        //     console.log()
+        //   })
+        // }
       })
       .catch((err) => console.log("Error", err));
 
@@ -1015,6 +1034,19 @@ class Table extends Component {
     );
     this.state.catlist.map((v, i) => {
       list.push(<option value={v}>{v}</option>);
+    });
+    return list;
+  };
+
+  getPaymentOption = () => {
+    let list = [];
+    list.push(
+      <option selected value={2}>
+        All
+      </option>
+    );
+    this.state.paymentlist.map((v, i) => {
+      list.push(<option value={i}>{v}</option>);
     });
     return list;
   };
@@ -1099,7 +1131,8 @@ class Table extends Component {
             "&fdate=" +
             this.state.fromDate +
             "&catselected=" +
-            this.state.catselected,
+            this.state.catselected+"&paymentselected=" +
+            this.state.paymentselected,
           this.state.checkedlist
         )
         .then((response) => {
@@ -1115,6 +1148,7 @@ class Table extends Component {
             prevcatselected: this.state.catselected,
             prevfromDate: this.state.fromDate,
             prevselectedDate: this.state.selectedDate,
+            prevselectedpayment: this.state.paymentselected
           });
 
           //console.log("Response Data",response.data)
@@ -1136,7 +1170,8 @@ class Table extends Component {
             "&fdate=" +
             this.state.prevfromDate +
             "&catselected=" +
-            this.state.prevcatselected,
+            this.state.prevcatselected+"&paymentselected=" +
+            this.state.prevselectedpayment,
           this.prevcheckedlist
         )
         .then((response) => {
@@ -1192,13 +1227,22 @@ class Table extends Component {
                     {this.getStatusOption()}
                 </select>
                 </div> */}
-          <div style={{ textAlign: "center", display: "inline-block" }}>
+          <div style={{ textAlign: "center", display: "inline-block", }}>
             <label style={{ color: "white" }}>Category: </label>
             <select
               style={{ width: "100%", marginLeft: "20px" }}
               onChange={(e) => this.setState({ catselected: e.target.value })}
             >
               {this.getCategoryOption()}
+            </select>
+          </div>
+          <div style={{ textAlign: "center", display: "inline-block" }}>
+            <label style={{ color: "white" }}>Payment Status: </label>
+            <select
+              style={{ width: "70%", }}
+              onChange={(e) => this.setState({ paymentselected: e.target.value })}
+            >
+              {this.getPaymentOption()}
             </select>
           </div>
           <div style={{ textAlign: "center",width:"50%", margin:"auto" }}>
@@ -1249,6 +1293,7 @@ class Table extends Component {
                   <th>Product Name</th>
                   <th>Payment Rcv/Not Rcv</th>
                   <th>Status</th>
+                  <th>Latest Status Rsn</th>
                   <th colSpan="2">Action</th>
                 </tr>
               </thead>
@@ -1318,6 +1363,9 @@ class Table extends Component {
           <ViewLog
             updateReason={(e) => {
               this.updateCommentsIndatabase(e);
+            }}
+            render_data={(e) => {
+              this.setState({render0:true, render1:true});
             }}
             show={this.state.logShow}
             onHide={() => this.setState({ logShow: false })}

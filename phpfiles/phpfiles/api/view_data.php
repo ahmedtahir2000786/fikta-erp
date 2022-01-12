@@ -4,16 +4,25 @@ $postdata = file_get_contents("php://input");
 $orders=[];
 $sql="";
 $catselected = $_GET['catselected'];
+$catselected = $_GET['paymentselected'];
 $date = $_GET['date'];
 $fdate = $_GET['fdate'];
 if(isset($postdata) && !empty($postdata)){
     $request = json_decode($postdata);
     if(count($request) == 6){
      if($catselected=="all"){
-    $sql = "SELECT * FROM orders WHERE ((status='{$request[0]}') || (status='{$request[1]}') || (status='{$request[2]}') || (status='{$request[3]}') || (status='{$request[4]}') || (status='{$request[5]}')) AND `date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59' ";
-        }else{
+      //   if($paymentselected== 1){
+      //       $sql = "SELECT * FROM orders WHERE `paymentrcvd`= 1 AND ((status='{$request[0]}') || (status='{$request[1]}') || (status='{$request[2]}') || (status='{$request[3]}') || (status='{$request[4]}') || (status='{$request[5]}')) AND `date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59' ";
+      //   }else if($paymentselected == 0){
+      //        $sql = "SELECT * FROM orders WHERE `paymentrcvd` != 1 AND ((status='{$request[0]}') || (status='{$request[1]}') || (status='{$request[2]}') || (status='{$request[3]}') || (status='{$request[4]}') || (status='{$request[5]}')) AND `date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59' ";
+      //   }else{
+      //       $sql = "SELECT * FROM orders WHERE ((status='{$request[0]}') || (status='{$request[1]}') || (status='{$request[2]}') || (status='{$request[3]}') || (status='{$request[4]}') || (status='{$request[5]}')) AND `date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59' ";
+      //   }
+      $sql = "SELECT * FROM orders WHERE ((status='{$request[0]}') || (status='{$request[1]}') || (status='{$request[2]}') || (status='{$request[3]}') || (status='{$request[4]}') || (status='{$request[5]}')) AND `date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59' ";
+    }else{
              $sql = "SELECT * FROM orders WHERE `category`='{$catselected}' AND ((status='{$request[0]}') || (status='{$request[1]}') || (status='{$request[2]}') || (status='{$request[3]}') || (status='{$request[4]}') || (status='{$request[5]}')) AND `date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59' ";
         };
+    
 }else if(count($request) == 5){
     if($catselected=="all"){
     $sql = "SELECT * FROM orders WHERE ((status='{$request[0]}') || (status='{$request[1]}') || (status='{$request[2]}') || (status='{$request[3]}') || (status='{$request[4]}')) AND `date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59' ";
@@ -91,6 +100,12 @@ else if(count($request) == 11){
         }
 }
 };
+
+if($paymentselected== 1){
+      $sql = $sql."AND `paymentrcvd`= 1"; 
+}else if($paymentselected == 0){
+      $sql = $sql."AND `paymentrcvd` != 1"; 
+}
 
 if($result = mysqli_query($con, $sql)){
         $cr=0;
