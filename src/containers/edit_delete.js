@@ -17,7 +17,7 @@ class Ticket extends Component {
       if (user) {
         //console.log(user)
       } else {
-        prop.history.push("/dataentry");
+        prop.history.push("/");
       }
     });
   }
@@ -501,19 +501,21 @@ class EditDelete extends Component {
       ":" +
       ("00" + date.getSeconds()).slice(-2);
     let time = this.getTimeDifference(date, e["date"]);
-    if (time != "") {
-      return (
-        <Link to={"/dataentry/edit/" + e["ord_id"]}>
-          <button className="btn-dark btn-xs">Edit</button>
-        </Link>
-      );
-    } else {
-      return (
-        <button className="btn btn-dark" disabled>
-          Edit
-        </button>
-      );
-    }
+    // if (time != "") {
+    //   return (
+    //     // <Link to={"/dataentry/edit/" + e["ord_id"]}>
+    //     //   <button className="btn-dark btn-xs">Edit</button>
+    //     // </Link>
+    //     <div></div>
+    //   );
+    // } else {
+    //   return (
+    //     // <button className="btn btn-dark" disabled>
+    //     //   Edit
+    //     // </button>
+    //     <div></div>
+    //   );
+    // }
   };
   row = (k) => {
     let date = new Date();
@@ -681,7 +683,7 @@ class EditDelete extends Component {
       <div>
         <button
           className="btn-xs btn-dark"
-          onClick={() => this.props.history.push("/dataentry/data")}
+          onClick={() => this.props.history.push("/data")}
           style={{ position: "absolute", right: 25, width: "20%" }}
         >
           Back to Dashboard

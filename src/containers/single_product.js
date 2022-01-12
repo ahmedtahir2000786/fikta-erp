@@ -455,9 +455,8 @@ class SingleProduct extends Component {
       )
     ) {
       return (
-        <Container>
-          <Row>
-            <Col>
+        <Col>
+    
               <Card
                 style={{
                   width: "70%",
@@ -482,30 +481,7 @@ class SingleProduct extends Component {
                     src={this.state.prodwithseltype[i].pic_url[n]}
                   />
                   <Card.Text>
-                    <Row>
-                      <Col>
-                        <div className="table-wrapper">
-                          <table className="fl-table">
-                            <thead>
-                              <tr>
-                                <th>Feature</th>
-                                <th>Value</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {this.getFeatures(
-                                this.state.prodwithseltype[i],
-                                n
-                              )}
-                              {/* <tr>
-                                            <td>Banwar Type</td>
-                                            <td>Value</td>
-                                        </tr> */}
-                            </tbody>
-                          </table>
-                        </div>
-                      </Col>
-                      <Col>
+                   
                         <div className="table-wrapper">
                           <table className="fl-table">
                             <thead>
@@ -523,44 +499,70 @@ class SingleProduct extends Component {
                             </tbody>
                           </table>
                         </div>
-                      </Col>
-                    </Row>
+                     
                   </Card.Text>
                 </Card.Body>
               </Card>
-            </Col>
-          </Row>
-        </Container>
+           
+       
+        </Col>
       );
     }
   };
   getProductCard = (i, n) => {
     //console.log(this.state.prodwithseltype[i].name, this.emptyProducts);
     //console.log(!this.emptyProducts);
-    if (!this.emptyProducts.includes(this.state.prodwithseltype[i].name)) {
-      return (
-        <div>
-          {n == 0 ? (
-            <div
-              style={{
-                background: "white",
-                marginTop: "15px",
-                marginBottom: "15px",
-              }}
-            >
-              <h2 style={{ color: "black" }}>
-                Product Name:{" "}
-                <strong>{this.state.prodwithseltype[i].name}</strong>
-              </h2>
-            </div>
-          ) : (
-            ""
-          )}
-          {this.getColorCard(i, n)}
-        </div>
-      );
+    if (!this.emptyProducts.includes(this.state.prodwithseltype[i].name) ) {
+      if(!this.emptyColors[this.state.prodwithseltype[i].name].includes(
+        this.state.prodwithseltype[i].color[n]
+      )){
+        return (
+      
+         
+         
+          <Col>{this.getColorCard(i, n)}</Col>
+         
+    );
+      }
+     
     }
   };
+
+  Export2Word = () => {
+    var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+    var postHtml = "</body></html>";
+    var html = preHtml+document.getElementById("#worddoc").innerHTML+postHtml;
+
+    var blob = new Blob(['\ufeff', html], {
+        type: 'application/msword'
+    });
+    
+    // Specify link url
+    var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+    
+    // Specify file name
+    let filename = "Product"+'.doc';
+    
+    // Create download link element
+    var downloadLink = document.createElement("a");
+
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob ){
+        navigator.msSaveOrOpenBlob(blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = url;
+        
+        // Setting the file name
+        downloadLink.download = filename;
+        
+        //triggering the function
+        downloadLink.click();
+    }
+    
+    document.body.removeChild(downloadLink);
+}
   checkEmpty = () => {
     Object.keys(this.state.productcount).map((v) => {
       this.emptyColors[v] = [];
@@ -584,17 +586,60 @@ class SingleProduct extends Component {
     //console.log("Empty Products: ", this.emptyProducts);
     //console.log("Empty Colors: ", this.emptyColors);
   };
+
   getAllProductCard = () => {
     let list = [];
     this.checkEmpty();
     //console.log("Empty Products: ", this.emptyProducts);
     //console.log("Empty Colors: ", this.emptyColors);
     this.state.prodwithseltype.map((v, i) => {
+     
       v.color.map((m, n) => {
+        if (!this.emptyProducts.includes(this.state.prodwithseltype[i].name)){
+          if(n==0){
+            list.push(<div>
+              <div
+                style={{
+                  background: "white",
+                  marginTop: "15px",
+                  marginBottom: "15px",
+                }}
+              >
+                <h2 style={{ color: "black" }}>
+                   Product Name:{" "}
+                  <strong>{this.state.prodwithseltype[i].name}</strong>
+                </h2>
+              </div>
+              <div style={{width:"50%", margin:"auto"}}>
+              <table className="fl-table">
+                              <thead>
+                                <tr>
+                                  <th>Feature</th>
+                                  <th>Value</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {this.getFeatures(
+                                  this.state.prodwithseltype[i],
+                                  n
+                                )}
+                                {/* <tr>
+                                              <td>Banwar Type</td>
+                                              <td>Value</td>
+                                          </tr> */}
+                              </tbody>
+                            </table>
+                            </div>
+                            </div>)
+          }
+
+        }
+        
+       
         list.push(this.getProductCard(i, n));
       });
     });
-    return list;
+    return (<Row>{list}</Row>);
   };
   getsinglesoletype = (type, arr) => {
     let list = [];
@@ -840,9 +885,16 @@ class SingleProduct extends Component {
           >
             Get Details
           </button>
+          <button
+            style={{marginLeft:"10px"}}
+            className="btn btn-danger"
+            onClick={() => this.Export2Word()}
+          >
+            Export to Word
+          </button>
         </div>
 
-        <div>
+        <div id="#worddoc">
           {this.state.showProducts == true ? (
             this.getAllProductCard()
           ) : (
