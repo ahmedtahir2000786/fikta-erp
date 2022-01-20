@@ -229,7 +229,7 @@ class Home extends Component {
           </Col>
          
         </Row>
-        <Row>
+        <Row style={{ textAlign: "center", padding: "10px" }}>
         <Col style={{ margin: "10px" }}>
             <CardData
               link="/chq_data"

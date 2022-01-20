@@ -17,7 +17,7 @@ $sql ="";
                 $c = $c."OR (design_name LIKE '%$req[$x]%')";
             }
         }
-        $sql = "SELECT * FROM orders WHERE delete_ord = '0' AND (`date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59')";
+        $sql = "SELECT * FROM orders WHERE delete_ord != '1' AND (`date` BETWEEN '$fdate 00:00:00' AND '$date 23:59:59')";
     if($result = mysqli_query($con, $sql)){
         $cr=0;
         while($row=mysqli_fetch_assoc($result)){

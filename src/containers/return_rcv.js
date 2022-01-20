@@ -8,6 +8,61 @@ import { Button, Modal, Form } from "react-bootstrap";
 import moment from "moment";
 import fb from "../config/firebase";
 
+class ReconfrimReturn extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      reason: "",
+      reasonErr: "",
+    };
+  }
+  render() {
+    return (
+      <Modal
+        {...this.props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        backdrop="static" 
+        keyboard = {false}
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Are you sure you received the parcel?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div><em>You won't be able to change it later.</em></div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="btn-danger"
+            onClick={() => {
+              this.props.updateRtnStatus();
+              this.props.onHide();
+              
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            className="btn-primary"
+            onClick={() => {
+              //console.log(this.props)
+              this.setState({ reason: "" });
+              this.props.onHide();
+            }}
+          >
+            Cancel
+          </Button>
+          {/* onClick={this.props.onHide} */}
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+}
+
+
 class Ticket extends Component {
   constructor(props) {
     super(props);
@@ -275,7 +330,10 @@ class ReturnData extends Component {
       render1: false,
       neworders: [],
       modalShow: false,
+      modalShowDelete: false,
       logShow: false,
+      id_rcv:"",
+      k_val:0,
       s: 0,
       i: 0,
       del_reason: "",
@@ -465,7 +523,7 @@ class ReturnData extends Component {
   changeRcvd = (e, v, d) => {
     v = Number(v);
 
-    console.log("I am here", e);
+    //console.log("I am here", e);
     axios
       .post(
         "https://meatncuts.com.pk/phpfiles/api/update_rcvd.php?id=" +
@@ -506,6 +564,7 @@ class ReturnData extends Component {
         <td>
           <button
             className="btn btn-primary"
+            disabled
             value={-1}
             onClick={(e) => {
               this.changeRcvd(
@@ -513,6 +572,7 @@ class ReturnData extends Component {
                 e.target.value,
                 this.state.neworders[k]["date"]
               );
+              
             }}
           >
             Received
@@ -526,14 +586,11 @@ class ReturnData extends Component {
             className="btn btn-danger"
             value={1}
             onClick={(e) => {
-              this.changeRcvd(
-                this.state.neworders[k]["ord_id"],
-                e.target.value,
-                this.state.neworders[k]["date"]
-              );
+              this.setState({modalShowDelete: true, id_rcv: e, k_val: k, s:k+1})
+              
             }}
           >
-            Not Received
+            Click If Received
           </button>
         </td>
       );
@@ -546,6 +603,7 @@ class ReturnData extends Component {
           <button
             className="btn btn-primary"
             value={-1}
+            disabled
             onClick={(e) => {
               this.changeRcvd(
                 this.newList[k]["ord_id"],
@@ -565,14 +623,11 @@ class ReturnData extends Component {
             className="btn btn-danger"
             value={1}
             onClick={(e) => {
-              this.changeRcvd(
-                this.newList[k]["ord_id"],
-                e.target.value,
-                this.newList[k]["date"]
-              );
+              this.setState({modalShowDelete: true, id_rcv: e, k_val: k, s:k+1})
+              
             }}
           >
-            Not Received
+            Click If Received
           </button>
         </td>
       );
@@ -1251,8 +1306,23 @@ class ReturnData extends Component {
           </button>
         </div>
         {this.state.showTable == true ? (
-          <div>
+          <div style={{textAlign: "center"}}>
             <h2>Return Order</h2>
+            <button
+            className="btn-xs btn-danger"
+            style={{margin:"auto", display:"none"}}
+            onClick={() => {
+              
+              if (this.state.clickCount == 1) {
+                this.setState({ clickCount: 0 });
+              } else {
+                this.setState({ clickCount: 1 });
+              }
+            }}
+            
+          >
+            Sort Rcvd/Not Recvd.
+          </button>
             <div className="table-wrapper">
               <table className="fl-table">
                 <thead>
@@ -1264,13 +1334,13 @@ class ReturnData extends Component {
                     <th>Name</th>
                     <th>Status</th>
                     <th
-                      onClick={() => {
-                        if (this.state.clickCount == 1) {
-                          this.setState({ clickCount: 0 });
-                        } else {
-                          this.setState({ clickCount: 1 });
-                        }
-                      }}
+                     onClick={() => {
+                      if (this.state.clickCount == 1) {
+                        this.setState({ clickCount: 0 });
+                      } else {
+                        this.setState({ clickCount: 1 });
+                      }
+                    }}
                     >
                       Return Rcvd.
                     </th>
@@ -1295,6 +1365,23 @@ class ReturnData extends Component {
             }}
             show={this.state.modalShow}
             onHide={() => this.setState({ modalShow: false })}
+            s={this.state.s}
+          />
+        ) : (
+          ""
+        )}
+        {this.state.modalShowDelete ? (
+          <ReconfrimReturn
+          updateRtnStatus={() => {
+            this.changeRcvd(
+              this.state.neworders[this.state.k_val]["ord_id"],
+              this.state.id_rcv.target.value,
+              this.state.neworders[this.state.k_val]["date"]
+            );
+            this.setState({render1:true, modalShowDelete: false })
+            }}
+            show={this.state.modalShowDelete}
+            onHide={() => this.setState({render1:true, modalShowDelete: false })}
             s={this.state.s}
           />
         ) : (

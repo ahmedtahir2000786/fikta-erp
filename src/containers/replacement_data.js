@@ -8,6 +8,62 @@ import { Button, Modal, Form } from "react-bootstrap";
 import moment from "moment";
 import fb from "../config/firebase";
 
+
+class ReconfrimReturn extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      reason: "",
+      reasonErr: "",
+    };
+  }
+  render() {
+    return (
+      <Modal
+        {...this.props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        backdrop="static" 
+        keyboard = {false}
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Are you sure you received the parcel?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div><em>You won't be able to change it later.</em></div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="btn-danger"
+            onClick={() => {
+              this.props.updateRtnStatus();
+              this.props.onHide();
+              
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            className="btn-primary"
+            onClick={() => {
+              //console.log(this.props)
+              this.setState({ reason: "" });
+              this.props.onHide();
+            }}
+          >
+            Cancel
+          </Button>
+          {/* onClick={this.props.onHide} */}
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+}
+
+
 class Ticket extends Component {
   constructor(props) {
     super(props);
@@ -270,6 +326,8 @@ class ReplacementData extends Component {
       "-" +
       ("00" + date.getDate()).slice(-2);
     this.state = {
+      id_rcv:"",
+      k_val:0,
       fromdate: date,
       todate: date,
       render1: false,
@@ -295,6 +353,7 @@ class ReplacementData extends Component {
       phoneSearch: 0,
       searchby: "date",
       render: false,
+      modalShowDelete:false
     };
     this.rcvarr = [];
     this.norcvarr = [];
@@ -507,6 +566,7 @@ class ReplacementData extends Component {
           <button
             className="btn btn-primary"
             value={-1}
+            disabled
             onClick={(e) => {
               this.changeRcvd(
                 this.state.neworders[k]["ord_id"],
@@ -526,14 +586,11 @@ class ReplacementData extends Component {
             className="btn btn-danger"
             value={1}
             onClick={(e) => {
-              this.changeRcvd(
-                this.state.neworders[k]["ord_id"],
-                e.target.value,
-                this.state.neworders[k]["date"]
-              );
+              this.setState({modalShowDelete: true, id_rcv: e, k_val: k, s:k+1})
+              
             }}
           >
-            Not Received
+            Click If Received
           </button>
         </td>
       );
@@ -546,6 +603,7 @@ class ReplacementData extends Component {
           <button
             className="btn btn-primary"
             value={-1}
+            disabled
             onClick={(e) => {
               this.changeRcvd(
                 this.newList[k]["ord_id"],
@@ -565,14 +623,11 @@ class ReplacementData extends Component {
             className="btn btn-danger"
             value={1}
             onClick={(e) => {
-              this.changeRcvd(
-                this.newList[k]["ord_id"],
-                e.target.value,
-                this.newList[k]["date"]
-              );
+              this.setState({modalShowDelete: true, id_rcv: e, k_val: k, s:k+1})
+              
             }}
           >
-            Not Received
+            Click If Received
           </button>
         </td>
       );
@@ -1309,6 +1364,23 @@ class ReplacementData extends Component {
             onHide={() => this.setState({ logShow: false })}
             s={this.state.s}
             id={this.state.id}
+          />
+        ) : (
+          ""
+        )}
+        {this.state.modalShowDelete ? (
+          <ReconfrimReturn
+          updateRtnStatus={() => {
+            this.changeRcvd(
+              this.state.neworders[this.state.k_val]["ord_id"],
+              this.state.id_rcv.target.value,
+              this.state.neworders[this.state.k_val]["date"]
+            );
+            this.setState({render1:true, modalShowDelete: false })
+            }}
+            show={this.state.modalShowDelete}
+            onHide={() => this.setState({render1:true, modalShowDelete: false })}
+            s={this.state.s}
           />
         ) : (
           ""
