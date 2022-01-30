@@ -18,7 +18,7 @@ require 'connect.php';
   }
   $r =
       [
-      "date" => date("Y-m-d H:i:s", strtotime('+5 hours')),
+      "date" => date("Y-m-d H:i:s", strtotime('+11 hours')),
       "st" => $status,
       "reason"=>$statusReason,
 	"updated" => []
@@ -31,7 +31,7 @@ require 'connect.php';
    $sql2 = "UPDATE `order_status` SET `status_date`='$c' WHERE `ord_id`='{$id}'";
     if(mysqli_query($con, $sql)){
        if(mysqli_query($con, $sql2)){
-        $sql3 = "UPDATE `orders` SET `reason`='$statusReason' WHERE `ord_id`='{$id}'";
+        $sql3 = "UPDATE `orders` SET `reason`='$statusReason', `date`='$date' WHERE `ord_id`='{$id}'";
          if(mysqli_query($con, $sql3)){
         http_response_code(201);
          }
