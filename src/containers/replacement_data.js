@@ -8,7 +8,44 @@ import { Button, Modal, Form } from "react-bootstrap";
 import moment from "moment";
 import fb from "../config/firebase";
 
+class LoadingScreen extends Component {
+  constructor(props) {
+    super(props);
+ 
+  }
+ 
+  componentDidMount = () =>{
+    setTimeout(() => {this.props.onHide()}, 3000); 
+    
+  }
+ 
+  render() {
+    //console.log(this.props.i)
+    
+    return (
+      <Modal
+        {...this.props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        backdrop="static" 
+        keyboard = {false}
+      >
+        <div class="text-center" style={{padding:"10px"}}>
+        <button class="btn btn-danger" type="button" disabled>
+  <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+  <span class="sr-only">Loading...</span>
+</button>
+<button class="btn btn-dark" type="button" disabled>
+  <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+  Loading... Wait 3 Sec
+</button>
+</div>
 
+      </Modal>
+    );
+  }
+}
 class ReconfrimReturn extends Component {
   constructor(props) {
     super(props);
@@ -326,6 +363,7 @@ class ReplacementData extends Component {
       "-" +
       ("00" + date.getDate()).slice(-2);
     this.state = {
+      isLoading:false,
       id_rcv:"",
       k_val:0,
       fromdate: date,
@@ -778,28 +816,34 @@ class ReplacementData extends Component {
         );
       }
     } else {
-      if (this.newList[k]["delete_ord"] == "1") {
-        return (
-          <tr style={{ background: "lightBlue" }} key={k}>
-            <td>-</td>
-            {Object.keys(this.newList[k]).map((keyName, i) => {
-              return this.sortData(i, k, keyName);
-            })}
-            <td></td>
-          </tr>
-        );
-      } else {
-        this.s_num = this.s_num + 1;
-        let x = this.s_num;
-        return (
-          <tr key={k}>
-            <td>{this.s_num}</td>
-            {Object.keys(this.newList[k]).map((keyName, i) => {
-              return this.sortData(i, k, keyName);
-            })}
-          </tr>
-        );
+      try{
+        if (this.newList[k]["delete_ord"] == "1") {
+          return (
+            <tr style={{ background: "lightBlue" }} key={k}>
+              <td>-</td>
+              {Object.keys(this.newList[k]).map((keyName, i) => {
+                return this.sortData(i, k, keyName);
+              })}
+              <td></td>
+            </tr>
+          );
+        } else {
+          this.s_num = this.s_num + 1;
+          let x = this.s_num;
+          return (
+            <tr key={k}>
+              <td>{this.s_num}</td>
+              {Object.keys(this.newList[k]).map((keyName, i) => {
+                return this.sortData(i, k, keyName);
+              })}
+            </tr>
+          );
+        }
       }
+      catch(err){
+
+      }
+    
 
       // console.log(this.rcvarr)
       // let list2=[]
@@ -834,13 +878,13 @@ class ReplacementData extends Component {
   };
 
   componentDidMount() {
-    this.interval = setInterval(
-      () => this.setState({ time: Date.now() }),
-      10000
-    );
+    // this.interval = setInterval(
+    //   () => this.setState({ time: Date.now() }),
+    //   10000
+    // );
   }
   componentWillUnmount() {
-    clearInterval(this.interval);
+    //clearInterval(this.interval);
   }
   onSubmit = (e) => {
     e.preventDefault();
@@ -1286,6 +1330,31 @@ class ReplacementData extends Component {
                   }
                 />
               </div>
+              <div style={{ textAlign: "center", display: "inline-block" }}>
+            {/* <label style={{ color: "white" }}>Payment Status: </label>
+            <select
+              style={{ width: "70%", }}
+              onChange={(e) => this.setState({ paymentselected: e.target.value })}
+            >
+              {this.sortFilter()}
+            </select> */}
+             <button
+              className="btn btn-dark"
+              onClick={() => {
+                
+                if (this.state.clickCount == 1) {
+                  //console.log("It's working")
+                  this.setState({ clickCount: 0, render1:true, isLoading:true });
+                  
+                } else {
+                  this.setState({ clickCount: 1, render1:true, isLoading:true });
+                }
+              }}
+            >
+              Sort
+              
+            </button>
+          </div>
             </div>
           ) : (
             ""
@@ -1322,13 +1391,7 @@ class ReplacementData extends Component {
                     <th>Name</th>
                     <th>Status</th>
                     <th
-                      onClick={() => {
-                        if (this.state.clickCount == 1) {
-                          this.setState({ clickCount: 0 });
-                        } else {
-                          this.setState({ clickCount: 1 });
-                        }
-                      }}
+                      
                     >
                       Replacement Rcvd.
                     </th>
@@ -1381,6 +1444,15 @@ class ReplacementData extends Component {
             show={this.state.modalShowDelete}
             onHide={() => this.setState({render1:true, modalShowDelete: false })}
             s={this.state.s}
+          />
+        ) : (
+          ""
+        )}
+         {this.state.isLoading ? (
+          <LoadingScreen
+            show={this.state.isLoading}
+            onHide={() => this.setState({ isLoading: false })}
+         
           />
         ) : (
           ""

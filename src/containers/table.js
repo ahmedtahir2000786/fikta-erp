@@ -736,7 +736,7 @@ class Table extends Component {
   };
 
   changeStatus = (e, k) => {
-    //console.log(this.state.neworders[k]['ord_id'], e)
+    console.log(this.state.neworders[k]['date'], e)
 
     axios
       .get(

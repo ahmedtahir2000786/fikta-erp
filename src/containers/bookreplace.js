@@ -382,7 +382,7 @@ class BookReplace extends Component {
         "https://meatncuts.com.pk/phpfiles/api/shipperdtl_city.php?cnd=shipper"
       )
       .then((response) => {
-        console.log(response.data);
+        //console.log(response.data);
         this.setState({ shipper_detail: response.data });
       })
       .catch((err) => console.log("Error", err));
