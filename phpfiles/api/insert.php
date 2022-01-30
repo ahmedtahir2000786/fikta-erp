@@ -50,7 +50,7 @@ if(isset($postdata) && !empty($postdata)){
     if($con->query($sql) === TRUE){
         $last_id = $con->insert_id;
         $status=  [[
-    "date" => date("Y-m-d H:i:s", strtotime('+5 hours')),
+    "date" => date("Y-m-d H:i:s", strtotime('+11 hours')),
     "st" => "Booked",
     "reason"=>"None",
     "updated" => []
